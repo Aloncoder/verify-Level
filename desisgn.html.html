@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snay.io Level Verification</title>
+    <style>
+        /* CSS styling for Discord UI */
+        body {
+            background-color: #36393f;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .card {
+            background-color: #2f3136;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fade-in 0.5s ease-in-out;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .card:hover {
+            transform: scale(1.05);
+        }
+        
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .card input[type="file"] {
+            display: none;
+        }
+        
+        .custom-file-upload {
+            border: none;
+            background-color: #7289da;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        
+        .custom-file-upload:hover {
+            background-color: #4a5bc8;
+        }
+        
+        .card input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #40444b;
+            color: #ffffff;
+            outline: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+        
+        .card input[type="text"]:focus {
+            background-color: #7289da;
+        }
+        
+        .card button {
+            padding: 10px 40px;
+            background-color: #7289da;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        
+        .card button:hover {
+            background-color: #4a5bc8;
+        }
+        
+        .loading-container {
+            display: none;
+            margin-top: 20px;
+            animation: fade-in 0.5s ease-in-out;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ffffff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: loading-spin 1s infinite linear;
+        }
+        
+        .verification {
+            display: none;
+            margin-top: 20px;
+            color: #43b581;
+            font-weight: bold;
+            animation: fade-in 0.5s ease-in-out;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .uploaded-image {
+            margin-top: 20px;
+            max-width: 200px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tutorial-button {
+            margin-top: 20px;
+            padding: 10px 40px;
+            background-color: #7289da;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        
+        .tutorial-button:hover {
+            background-color: #4a5bc8;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .modal {
+            background-color: #2f3136;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0, 0, 0, 0.2);
+            animation: fade-in 0.5s ease-in-out;
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .modal-button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        
+        .modal-button-yes {
+            background-color: #43b581;
+            color: #ffffff;
+        }
+        
+        .modal-button-no {
+            background-color: #f04747;
+            color: #ffffff;
+        }
+        
+        .modal-button:hover {
+            opacity: 0.8;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: color 0.3s ease-in-out;
+        }
+        
+        .modal-close:hover {
+            color: #999999;
+        }
+        
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes loading-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="title">Snay.io Level Verification</div>
+            <h2>Upload a Picture</h2>
+            <input type="file" id="fileInput" accept="image/*" />
+            <label for="fileInput" class="custom-file-upload">Choose File</label>
+            <input type="text" id="discordName" placeholder="Enter Your Discord Username" />
+            <br />
+            <button onclick="submitForm()">Submit</button>
+            <div id="loadingContainer" class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Verifying... Please wait.</div>
+            </div>
+            <div id="verification" class="verification"></div>
+            <div id="imageContainer"></div>
+            <button class="tutorial-button" onclick="openModal()">Tutorial</button>
+            <input type="hidden" id="webhookURL" value="YOUR_DISCORD_WEBHOOK_URL" />
+        </div>
+    </div>
+    
+    <div id="modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-title">Do you want to open the tutorial?</div>
+            <div class="modal-buttons">
+                <button class="modal-button modal-button-yes" onclick="openTutorial()">Yes</button>
+                <button class="modal-button modal-button-no" onclick="closeModal()">No</button>
+            </div>
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+        </div>
+    </div>
+    
+    <script>
+        var fileInput = document.getElementById("fileInput");
+        var discordNameInput = document.getElementById("discordName");
+        var loadingContainer = document.getElementById("loadingContainer");
+        var verificationElement = document.getElementById("verification");
+        var imageContainer = document.getElementById("imageContainer");
+        var webhookURL = document.getElementById("webhookURL").value;
+        var modal = document.getElementById("modal");
+        
+        function submitForm() {
+            var file = fileInput.files[0];
+            var discordName = discordNameInput.value;
+            
+            loadingContainer.style.display = "flex";
+            verificationElement.style.display = "none";
+            imageContainer.innerHTML = "";
+            
+            var formData = new FormData();
+            formData.append("file", file);
+            formData.append("content", `Discord Name: ${discordName}`);
+            
+            fetch(webhookURL, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                loadingContainer.style.display = "none";
+                verificationElement.style.display = "block";
+                verificationElement.innerText = "Verification successful! File name: " + file.name + ", Discord Name: " + discordName;
+                
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.alt = "Uploaded Image";
+                    img.classList.add("uploaded-image");
+                    imageContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+                
+                fileInput.value = "";
+                discordNameInput.value = "";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+        
+        function openModal() {
+            modal.style.display = "flex";
+        }
+        
+        function closeModal() {
+            modal.style.display = "none";
+        }
+        
+        function openTutorial() {
+            window.open("YOUR_TUTORIAL_URL", "_blank");
+            closeModal();
+        }
+    
+        window.addEventListener("DOMContentLoaded", function() {
+            closeModal();
+        });
+    </script>
+    
+    
+</body>
+</html>
